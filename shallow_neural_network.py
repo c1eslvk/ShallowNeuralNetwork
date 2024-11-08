@@ -108,17 +108,14 @@ class NeuralNetwork:
         return inputs
 
     def backpropagate(self, y_true):
-        # Calculate delta for the output layer
         output_layer = self.layers[-1]
         output_error = output_layer.outputs - y_true
         output_layer.deltas = output_error * output_layer.derivative(output_layer.outputs)
 
-        # Calculate delta for hidden layers
         for i in reversed(range(len(self.layers) - 1)):
             next_layer = self.layers[i + 1]
             self.layers[i].compute_deltas(next_layer.deltas, next_layer.weights)
 
-        # Update weights and biases for all layers
         for layer in self.layers:
             layer.weights -= self.learning_rate * np.dot(layer.deltas, layer.inputs.T)
             layer.biases -= self.learning_rate * np.sum(layer.deltas, axis=1, keepdims=True)
