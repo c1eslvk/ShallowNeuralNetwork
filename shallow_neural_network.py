@@ -4,17 +4,29 @@ import plotly.express as px
 import pandas as pd
 
 # Activation Functions
+def heaviside(s):
+    return np.where(s >= 0, 1, 0)
+
 def sigmoid(s):
     return 1 / (1 + np.exp(-s))
 
 def sigmoid_derivative(s):
     return sigmoid(s) * (1 - sigmoid(s))
 
+def sin(s):
+    return np.sin(s)
+
+def sin_derivative(s):
+    return np.cos(s)
+
 def tanh(s):
     return np.tanh(s)
 
 def tanh_derivative(s):
     return 1 - np.tanh(s)**2
+
+def sign(s):
+    return np.sign(s)
 
 def relu(s):
     return np.where(s > 0, s, 0.0)
@@ -40,25 +52,37 @@ class Layer:
         self.deltas = None
 
     def activate(self, s):
-        if self.activation == 'sigmoid':
+        if self.activation == 'heaviside':
+            return heaviside(s)
+        elif self.activation == 'sigmoid':
             return sigmoid(s)
+        elif self.activation == 'sin':
+            return sin(s)
         elif self.activation == 'tanh':
             return tanh(s)
+        elif self.activation == 'sign':
+            return sign(s)
         elif self.activation == 'relu':
             return relu(s)
         elif self.activation == 'leaky relu':
             return leaky_relu(s)
     
     def derivative(self, s):
-        if self.activation == 'sigmoid':
+        if self.activation == 'heaviside':
+            return 1
+        elif self.activation == 'sigmoid':
             return sigmoid_derivative(s)
+        elif self.activation == 'sin':
+            return sin_derivative(s)
         elif self.activation == 'tanh':
             return tanh_derivative(s)
+        elif self.activation == 'sign':
+            return 1
         elif self.activation == 'relu':
             return relu_derivative(s)
         elif self.activation == 'leaky relu':
             return leaky_relu_derivative(s)
-
+        
     def forward(self, inputs):
         self.inputs = inputs
         z = np.dot(self.weights, inputs) + self.biases
@@ -138,7 +162,7 @@ def main():
     num_of_modes_class_0 = st.sidebar.number_input("Number of Modes for Class 0", min_value=1, max_value=10, value=1)
     num_of_modes_class_1 = st.sidebar.number_input("Number of Modes for Class 1", min_value=1, max_value=10, value=1)
     samples_per_mode = st.sidebar.number_input("Number of Samples per Mode", min_value=10, max_value=1000, value=100)
-    activation_function = st.sidebar.selectbox("Activation Function", ["sigmoid", "tanh", "relu", "leaky relu"])
+    activation_function = st.sidebar.selectbox("Activation Function", ["heaviside", "sigmoid", "sin", "tanh", "sign", "relu", "leaky relu"])
     num_of_hidden_layers = st.sidebar.slider("Number of Hidden Layers", min_value=1, max_value=3, value=1)
     neurons_per_hidden_layer = st.sidebar.slider("Neurons per Hidden Layer", min_value=2, max_value=10, value=5)
     learning_rate = st.sidebar.slider("Learning Rate", min_value=0.01, max_value=1.0, value=0.1)
